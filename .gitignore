@@ -1,0 +1,10 @@
+# Directories
+.vs/
+AssetsLuoke/
+Library/
+Logs/
+obj/
+
+# Files
+*.csproj
+*.sln
