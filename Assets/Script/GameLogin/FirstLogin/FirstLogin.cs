@@ -6,16 +6,15 @@ using UnityEngine.UI;
 
 public class FirstLogin : MonoBehaviour
 {
-    public delegate void ColorBtnClick();
-
-
+    public GameObject[] slots;
+    public GameObject[] ColorBtn;
     public GameLoad GameLoad;
     public RandomLogin RandomLogin;//随机名字
     public InputField NameInput;
-    public PlayerController PlayerController;
+    public PlayerControl PlayerControl;
     public Text TextAlert;
     float TextAlertY;
-    bool gender = true;//true=男 false=女
+    public bool gender;//false=男 true=女
     #region 注册
     public Text MyName;//输入框名字
     bool isRightRules;//是否勾选了公约
@@ -23,6 +22,8 @@ public class FirstLogin : MonoBehaviour
     private void Start()
     {
         TextAlertY = TextAlert.rectTransform.localPosition.y;
+        gender = false;//默认为男
+        slots[1].GetComponent<CanvasGroup>().alpha = 0.45f;//女图片暗下
     }
     public void OkClickName()//输入界面点击确定
     {
@@ -30,15 +31,16 @@ public class FirstLogin : MonoBehaviour
         {
             GameUnder.gameUnder.Name = MyName.text;
             GameUnder.gameUnder.isLogin = true;//注册状态变为已注册
-            //PlayerController.MyInfoName.text = GameUnder.gameUnder.Name;//展示名字
-            //PlayerController.MyInfoGoldCoin.text = GameUnder.gameUnder.GoldCoin.ToString();//展示洛克钻
-            //PlayerController.MyInfoCoin.text = GameUnder.gameUnder.Coin.ToString();//展示洛克贝
-            //PlayerController.MyInfoVIP.text = "VIP" + GameUnder.gameUnder.VIP;//展示VIP
+            PlayerControl.myInfoName.text = GameUnder.gameUnder.Name;//展示名字
+            PlayerControl.personName.text = GameUnder.gameUnder.Name;
+            PlayerControl.myInfoGoldCoin.text = GameUnder.gameUnder.GoldCoin.ToString();//展示洛克钻
+            PlayerControl.myInfoCoin.text = GameUnder.gameUnder.Coin.ToString();//展示洛克贝
+            PlayerControl.myInfoVIP.text = "VIP" + GameUnder.gameUnder.VIP;//展示VIP
             DateTime dt = DateTime.Now;
             GameUnder.gameUnder.Birthday = dt.ToLongDateString();
             GameLoad.SaveGame();//保存
             GameLoad.LoadGame();
-            PlayerController.AlertWindow.SetActive(false);//关闭输入信息界面
+            PlayerControl.AlertWindow.SetActive(false);//关闭输入信息界面
         }
         else//名字为空
         {
@@ -106,12 +108,12 @@ public class FirstLogin : MonoBehaviour
     #region 随机物 和 颜色处理
     public void RandNameClick()
     {
-        if (gender)
+        if (gender == false)
         {
             int randIndex = UnityEngine.Random.Range(0, RandomLogin.boyNames.Length);
             NameInput.text = RandomLogin.boyNames[randIndex];
         }
-        else
+        else if (gender == true)
         {
             int randIndex = UnityEngine.Random.Range(0, RandomLogin.girlNames.Length);
             NameInput.text = RandomLogin.girlNames[randIndex];
@@ -119,8 +121,9 @@ public class FirstLogin : MonoBehaviour
     }
     public void RandColorClick()
     {
-        int rand = UnityEngine.Random.Range(1, 8);
-        switch (rand)
+        int rand = UnityEngine.Random.Range(0, 7);
+        RoleColor(rand);
+        /*switch (rand)
         {
             case 1:
                 break;
@@ -136,12 +139,37 @@ public class FirstLogin : MonoBehaviour
                 break;
             case 7:
                 break;
-        }
+        }*/
     }
 
-    public void ColorClick()
+    public void RoleColor(int colorIndex)
+    {//人物颜色 = 按钮颜色
+        Debug.Log(ColorBtn[colorIndex].name);
+    }
+
+    #endregion
+    #region 点击人物
+    public void ClickBoy()
     {
-        
+        //为男时点击 不变化
+        //为女时点击 变为男
+        if (gender == true)
+        {
+            gender = false;//变为男
+            slots[0].GetComponent<CanvasGroup>().alpha = 1f;//男图片高亮
+            slots[1].GetComponent<CanvasGroup>().alpha = 0.45f;//女图片暗下
+        }
+    }
+    public void ClickGirl()
+    {
+        //为女时点击 不变化
+        //为男时点击 变为女
+        if (gender == false)
+        {
+            gender = true;//变为女
+            slots[0].GetComponent<CanvasGroup>().alpha = 0.45f;//男图片暗下
+            slots[1].GetComponent<CanvasGroup>().alpha = 1f;//女图片高亮
+        }
     }
 
     #endregion
